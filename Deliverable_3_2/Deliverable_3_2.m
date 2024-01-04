@@ -4,8 +4,6 @@ close all
 clear all
 clc
 
-%% TODO: This file should produce all the plots for the deliverable
-
 %% Setup our system and compute the equilibrim state and corresponding control
 Ts = 1/20; % Sample time
 rocket = Rocket(Ts);

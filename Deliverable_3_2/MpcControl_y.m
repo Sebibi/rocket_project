@@ -103,8 +103,27 @@ classdef MpcControl_y < MpcControlBase
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            con = [mpc.A*xs + mpc.B*us == xs];
-            obj = (xs(4) - ref)*(xs(4) - ref);
+            % Def parameters
+            A = mpc.A; 
+            B = mpc.B;
+            C = mpc.C;
+
+            [~, nu] = size(B);
+
+            R = 10*eye(nu);
+            
+            % Constraints
+            M = [1;-1];
+            m = [deg2rad(15); deg2rad(15)];
+            F = [0 1 0 0; 0 -1 0 0];
+            f = [deg2rad(10); deg2rad(10)];
+
+            % Slide chap 6 page 43
+            A_new = [eye(nx) - A, B; C , 0];
+
+            % Constraints and objective 
+            con = [A_new * [xs; us] == [zeros(nx,1); ref], (F*xs <= f), (M*us <= m)];
+            obj = us' * R * us;
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
