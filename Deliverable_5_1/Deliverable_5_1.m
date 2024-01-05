@@ -34,18 +34,38 @@ mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
 %%
 x0 = [zeros(1, 9), 1 0 3]';
 ref = [1.2, 0, 3, 0]';
-Tf = 8;
+Tf = 25;
+
+[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+ph = rocket.plotvis(T, X, U, Ref);
+% 
+% [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
+% 
+% ph = rocket.plotvis(T, X, U, Ref);
 
 
 %% Manipulate mass for simulation
 rocket.mass = 2.13;
+rocket.mass_rate = -0.27;
 
 %% 
-%[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+ph = rocket.plotvis(T, X, U, Ref);
 
-[T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z)
+[T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
+ph = rocket.plotvis(T, X, U, Ref);
 
+%%
+figure
+plot(Z_hat(13,:))
+
+figure
+plot(Z_hat(12,:))
+% 
+% % Manipulate initial mass and mass rate coefficient for simulation
+% rocket.mass = 2.13; 
+% rocket.mass_rate = -0.27;
 
 
 

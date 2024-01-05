@@ -33,7 +33,7 @@ classdef MpcControl_y < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = eye(nx);
+            Q = diag([100, 200, 100, 600]);
             R = eye(nu);
 
             M = [1;-1];
@@ -62,12 +62,12 @@ classdef MpcControl_y < MpcControlBase
             A = mpc.A;
             B = mpc.B;
         
-            obj = U(:,1)' * R * U(:,1);
+            obj = (U(:,1)-u_ref)' * R * (U(:,1)-u_ref);
             con = (X(:,2) == A*X(:,1) + B*U(:,1)) + (M*U(:,1) <= m);
             for i = 2:N-1
                 con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i));
                 con = con + (F*X(:,i) <= f) + (M*U(:,i) <= m);
-                obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + U(:,i)'*R*U(:,i);
+                obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end 
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             con = con + (Ff*X(:,N) <= ff);
