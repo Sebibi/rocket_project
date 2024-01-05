@@ -1,4 +1,4 @@
-classdef MpcControl_y < MpcControlBase
+classdef MpcControl_x < MpcControlBase
     
     methods
         % Design a YALMIP optimizer object that takes a steady-state state
@@ -33,7 +33,7 @@ classdef MpcControl_y < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = diag([100, 100, 100, 600]);
+            Q = diag([1, 100, 1, 10]);
             R = eye(nu);
 
             M = [1;-1];
@@ -45,7 +45,7 @@ classdef MpcControl_y < MpcControlBase
             K = -K;
 
             Xf = polytope([F; M*K], [f;m]);
-            Acl = [mpc.A+mpc.B*K];
+            Acl = [mpc.A + mpc.B*K];
             while 1
                 prevXf = Xf;
                 [T, t] = double(Xf);
@@ -55,14 +55,13 @@ classdef MpcControl_y < MpcControlBase
                     break
                 end
             end
-
             [Ff, ff] = double(Xf);
             ff = ff + Ff * x_ref;
 
             A = mpc.A;
             B = mpc.B;
         
-            obj = U(:,1)' * R * U(:,1);
+            obj = (U(:,1))' * R * (U(:,1));
             con = (X(:,2) == A*X(:,1) + B*U(:,1)) + (M*U(:,1) <= m);
             for i = 2:N-1
                 con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i));
@@ -103,6 +102,7 @@ classdef MpcControl_y < MpcControlBase
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
+           
             % Def parameters
             A = mpc.A; 
             B = mpc.B;
