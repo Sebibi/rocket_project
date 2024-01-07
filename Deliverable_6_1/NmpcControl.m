@@ -60,6 +60,27 @@ classdef NmpcControl < handle
 
             % For box constraints on state and input, overwrite entries of
             % lbx, ubx, lbu, ubu defined above
+
+            F = @(x, u) RK4(x, u, rocket.Ts, rocket);
+
+            % State constraints
+            lbx(5) = -deg2rad(75); ubx(5) = deg2rad(75);
+            
+            eq_constr = zeros(12, 1);
+            eq_constr = eq_constr + (X_sym(:, 1) - x0_sym);
+            for i = 1:N-1
+                eq_constr = eq_constr + (X_sym(:, i+1) - F(X_sym(:, i), U_sym(:, i)));
+                cost = cost + (100*sum((X_sym([10, 11, 12, 6], i) - ref_sym)^2) + sum(U_sym(:, i)^2)) * rocket.Ts;
+            end             
+
+            % Input constraints
+            lbu(1) = -15; ubu(1) = 15;
+            lbu(2) = -15; ubu(2) = 15;
+            lbu(3) = 50; ubu(3) = 80;
+            lbu(4) = -20; ubu(4) = 20;
+
+            ineq_constr = [lbx - X_sym; X_sym - ubx; lbu - U_sym; U_sym - ubu];
+
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,8 +143,10 @@ classdef NmpcControl < handle
             % Delay compensation: Predict x0 delay timesteps later.
             % Simulate x_ for 'delay' timesteps
             x_ = x0;
-            % ...
-            x_ = obj.rocket.
+            
+            % for i = 1:delay
+            %     x_ = obj.rocket.f(x_, mem_u(i));
+            % end
        
             x0 = x_;
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -207,3 +230,25 @@ classdef NmpcControl < handle
     end
 end
 
+
+function [x_next] = RK4(x, u,h,rocket)
+%
+% Inputs : 
+%    X, U current state and input
+%    h    sample period
+%    f    continuous time dynamics f(x,u)
+% Returns
+%    State h seconds in the future
+%
+
+% Runge-Kutta 4 integration
+% write your function here
+
+% x_next = ...
+   
+    [k1, ~] = rocket.f(x, u);
+    [k2, ~] = rocket.f(x + (h/2)*k1, u);
+    [k3, ~] = rocket.f(x + (h/2)*k2 ,u);
+    [k4, ~] = rocket.f(x + h*k3, u);
+    x_next = x + h * (k1/6 + k2/3 + k3/3 + k4/6);
+end 
