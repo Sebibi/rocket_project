@@ -40,6 +40,8 @@ set(ph.fig, 'Name', 'Simulation before mass manipulation');
 
 % Manipulate mass for simulation
 rocket.mass = 2.13; 
+
+% Simulate
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 ph = rocket.plotvis(T, X, U, Ref);
 set(ph.fig, 'Name', 'Simulation after mass manipulation');
@@ -48,6 +50,7 @@ set(ph.fig, 'Name', 'Simulation after mass manipulation');
 [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 ph = rocket.plotvis(T, X, U, Ref);
 set(ph.fig, 'Name', 'Simulation with disturbance estimation');
+
 
 %% PLot the distubance estimation
 figure
