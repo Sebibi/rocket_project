@@ -8,4 +8,8 @@ optimize (abs(x) <= 1 , (x-3)*(x-3))
 value(x)
 
 gruobi_setup_path = "/home/sebastien/gurobi1100/linux64/matlab/gurobi_setup.m";
-run(gruobi_setup_path)
+run(gruobi_setup_path);
+
+addpath('/home/sebastien/gurobi1100/linux64/matlab/')
+savepath;
+

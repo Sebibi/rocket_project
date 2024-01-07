@@ -4,7 +4,6 @@ close all
 clear all
 clc
 
-%% TODO: This file should produce all the plots for the deliverable
 
 %% Setup our system and compute the equilibrim state and corresponding control
 Ts = 1/20; % Sample time
@@ -23,50 +22,34 @@ mpc_y = MpcControl_y(sys_y, Ts, H);
 mpc_z = MpcControl_z(sys_z, Ts, H);
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 
-%% Code du prof todo 5.1
 % Merge four sub−system controllers into one full−system controller
 mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
 
-% z0 = [0; 0];
-% 
-% uz = mpc_z.get_u(z0)
-
-%%
+% Setup the initial paramertes and the reference 
 x0 = [zeros(1, 9), 1 0 3]';
 ref = [1.2, 0, 3, 0]';
-Tf = 25;
+Tf = 8;
 
+%% Perform simulations
+
+% Simulate before mass manipulation
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 ph = rocket.plotvis(T, X, U, Ref);
-% 
-% [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
-% 
-% ph = rocket.plotvis(T, X, U, Ref);
+set(ph.fig, 'Name', 'Simulation before mass manipulation');
 
 
-%% Manipulate mass for simulation
-rocket.mass = 2.13;
-rocket.mass_rate = -0.27;
-
-%% 
+% Manipulate mass for simulation
+rocket.mass = 2.13; 
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 ph = rocket.plotvis(T, X, U, Ref);
+set(ph.fig, 'Name', 'Simulation after mass manipulation');
 
+% Simulate with disturbance estimation
 [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
-
 ph = rocket.plotvis(T, X, U, Ref);
+set(ph.fig, 'Name', 'Simulation with disturbance estimation');
 
-%%
+%% PLot the distubance estimation
 figure
 plot(Z_hat(13,:))
-
-figure
-plot(Z_hat(12,:))
-% 
-% % Manipulate initial mass and mass rate coefficient for simulation
-% rocket.mass = 2.13; 
-% rocket.mass_rate = -0.27;
-
-
-
-
+title("Disturbance Estimation")
