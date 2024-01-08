@@ -57,7 +57,7 @@ classdef NmpcControl < handle
 
             %% Linearize the system
             sys = rocket.linearize(xs, us);
-            Q = diag([1, 1, 1, 1, 1, 100, 1, 1, 1, 100, 100, 100]);
+            Q = diag([1, 1, 1, 1, 1, 100, 1, 1, 1, 100, 100, 1000]);
             R = eye(4);
             sys = c2d(sys,Ts);
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
@@ -77,8 +77,8 @@ classdef NmpcControl < handle
             F = @(x, u) RK4(x, u, rocket.Ts, rocket);
 
             % Input constraints
-            lbu(1) = -15; ubu(1) = 15;
-            lbu(2) = -15; ubu(2) = 15;
+            lbu(1) = -deg2rad(15); ubu(1) = deg2rad(15);
+            lbu(2) = -deg2rad(15); ubu(2) = deg2rad(15);
             lbu(3) = 50; ubu(3) = 80;
             lbu(4) = -20; ubu(4) = 20;
 
@@ -87,20 +87,17 @@ classdef NmpcControl < handle
                        
             eq_constr =  (X_sym(:, 1) - x0_sym); 
             for i = 1:N-1
-                eq_constr = [eq_constr ; X_sym(:, i+1) - rocket.f(X_sym(:, i), U_sym(:, i)) * Ts];
-                cost = cost + ( U_sym(:, i)' * R * U_sym(:, i) + X_sym(:, i)' * Q * X_sym(:,i) ) * rocket.Ts;
-                ineq_constr = [ineq_constr ; lbx - X_sym(:,i); X_sym(:,i) - ubx; lbu - U_sym(:,i); U_sym(:,i) - ubu];
+                eq_constr = [eq_constr ; X_sym(:, i+1) - F(X_sym(:,i), U_sym(:,i))];
+                cost = cost + ( U_sym(:, i)' * R * U_sym(:, i) + X_sym(:, i)' * Q * X_sym(:,i) );
+                ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,i); X_sym(5,i) - ubx(5); lbu - U_sym(:,i); U_sym(:,i) - ubu];
             end     
-            ineq_constr = [ineq_constr ; lbx - X_sym(:,N); X_sym(:,N) - ubx];
+            ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,N); X_sym(5,N) - ubx(5)];
             % ref_all = zeros(12, 1);
             % ref_all([10, 11, 12, 6]) = ref_sym;
-            cost = cost + (X_sym(:, N))'*Qf* (X_sym(:, N));
+            cost = cost + (X_sym(:, N))'*Qf* (X_sym(:, N)); 
 
-            size(eq_constr)
-            size(ineq_constr)
-                    
+            Qf
 
-            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
@@ -244,5 +241,28 @@ classdef NmpcControl < handle
             U_opt = full(reshape(nlp_x(id(1):id(2)), obj.nu, obj.N - 1));
         end
     end
+end
+
+
+function [x_next] = RK4(x, u,h,rocket)
+%
+% Inputs : 
+%    X, U current state and input
+%    h    sample period
+%    f    continuous time dynamics f(x,u)
+% Returns
+%    State h seconds in the future
+%
+
+% Runge-Kutta 4 integration
+% write your function here
+
+% x_next = ...
+   
+    [k1, ~] = rocket.f(x, u);
+    [k2, ~] = rocket.f(x + (h/2)*k1, u);
+    [k3, ~] = rocket.f(x + (h/2)*k2 ,u);
+    [k4, ~] = rocket.f(x + h*k3, u);
+    x_next = x + h * (k1/6 + k2/3 + k3/3 + k4/6);
 end
 

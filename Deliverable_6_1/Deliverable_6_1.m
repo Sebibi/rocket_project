@@ -1,7 +1,13 @@
+addpath(fullfile('..', 'src'));
+
+close all
+clear all
+clc
+
 Ts = 1/20;
 rocket = Rocket(Ts);
 
-H = 2; % Horizon length in seconds
+H = 5; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
 % MPC reference with default maximum roll = 15 deg
@@ -17,7 +23,6 @@ x0 = [0, 0, 0, 0, 0, deg2rad(10), 0, 0, 0, 1, 1, 1]';
 % ref4 = [2 2 2 deg2rad(40)]';
 ref4 = zeros(4, 1);
 [u, T_opt, X_opt, U_opt] = nmpc.get_u(x0, ref4);
-u = u + us;
 U_opt(:,end+1) = nan;
 ph = rocket.plotvis(T_opt, X_opt, U_opt, ref4);
 
