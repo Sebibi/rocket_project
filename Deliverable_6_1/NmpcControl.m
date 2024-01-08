@@ -21,9 +21,11 @@ classdef NmpcControl < handle
         nlp_lam_x0
         nlp_lam_g0
     end
-    
+
     methods
-        function obj = NmpcControl(rocket, tf)
+        function obj = NmpcControl(rocket, tf, expected_delay)
+            
+            if nargin < 3, expected_delay = 0; end
            
             import casadi.*
             
@@ -48,7 +50,18 @@ classdef NmpcControl < handle
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
+            Ts = 1/20;
+            rocket = Rocket(Ts);
             
+            [xs, us] = rocket.trim();
+
+            %% Linearize the system
+            sys = rocket.linearize(xs, us);
+            Q = eye(12);
+            R = eye(4);
+            sys = c2d(sys,Ts);
+            [,Qf,] = dlqr(sys.A, sys.B, Q, R);
+
             % Cost
             cost = 0;
             
@@ -66,20 +79,28 @@ classdef NmpcControl < handle
             % State constraints
             lbx(5) = -deg2rad(75); ubx(5) = deg2rad(75);
             
-            eq_constr = zeros(12, 1);
-            eq_constr = eq_constr + (X_sym(:, 1) - x0_sym);
+           
+            eq_constr =  (X_sym(:, 1) - x0_sym); 
+            a = size(eq_constr)
             for i = 1:N-1
-                eq_constr = eq_constr + (X_sym(:, i+1) - F(X_sym(:, i), U_sym(:, i)));
-                cost = cost + (100*sum((X_sym([10, 11, 12, 6], i) - ref_sym)^2) + sum(U_sym(:, i)^2)) * rocket.Ts;
-            end             
+                eq_constr = [eq_constr ; (X_sym(:, i+1) - F(X_sym(:, i), U_sym(:, i)))];
+                % a = size(eq_constr)
+                cost = cost + (100*dot(X_sym([10, 11, 12, 6], i) - ref_sym, X_sym([10, 11, 12, 6], i) - ref_sym) + (dot(U_sym(:, i), U_sym(:, i)))) * rocket.Ts;
+                c = size(cost)
+                ineq_constr = [ineq_constr ; lbx - X_sym(:,i); X_sym(:,i) - ubx; lbu - U_sym(:,i); U_sym(:,i) - ubu];
+            end     
 
+             eq_constr
+            ineq_constr = [ineq_constr ; lbx - X_sym(:,N); X_sym(:,N) - ubx];
+            cost = cost + (X_sym([10, 11, 12, 6], i) - ref_sym)'* eye(4)* (X_sym([10, 11, 12, 6], i) - ref_sym);
+            
             % Input constraints
             lbu(1) = -15; ubu(1) = 15;
             lbu(2) = -15; ubu(2) = 15;
             lbu(3) = 50; ubu(3) = 80;
             lbu(4) = -20; ubu(4) = 20;
 
-            ineq_constr = [lbx - X_sym; X_sym - ubx; lbu - U_sym; U_sym - ubu];
+            
 
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -251,4 +272,4 @@ function [x_next] = RK4(x, u,h,rocket)
     [k3, ~] = rocket.f(x + (h/2)*k2 ,u);
     [k4, ~] = rocket.f(x + h*k3, u);
     x_next = x + h * (k1/6 + k2/3 + k3/3 + k4/6);
-end 
+end
