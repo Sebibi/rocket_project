@@ -182,6 +182,12 @@ classdef NmpcControl < handle
             % Delay compensation: Save current u
             if obj.expected_delay > 0
                obj.mem_u = [mem_u(:, 2:end), u];
+
+               % id = obj.idx.U;
+               % U = full(reshape(nlp_x(id(1):id(2)), obj.nu, obj.N - 1));
+               % obj.mem_u = U(:, 1:delay);
+
+               % obj.mem_u = repmat(u, 1, delay);
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
