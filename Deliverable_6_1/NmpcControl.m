@@ -55,7 +55,7 @@ classdef NmpcControl < handle
             [xs, us] = rocket.trim();
  
             sys = rocket.linearize(xs, us);
-            Q = diag([1, 1, 1, 1, 1, 1000, 1, 1, 1, 1000, 1000, 1000]);
+            Q = diag([1, 1, 1, 1, 1, 2000, 1, 1, 1, 1000, 1000, 2000]);
             R = diag([1, 1, 0.5, 1]);
             sys = c2d(sys,rocket.Ts);
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
