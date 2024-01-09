@@ -67,7 +67,7 @@ classdef MpcControl_roll < MpcControlBase
             A = mpc.A;
             B = mpc.B;
         
-            obj = U(:,1)' * R * U(:,1);
+            obj = U(:,1)'*R*U(:,1);
             con = (X(:,2) == A*X(:,1) + B*U(:,1)) + (M*U(:,1) <= m);
             for i = 2:N-1
                 con = con + (M*U(:,i) <= m) + (X(:,i+1) == A*X(:,i) + B*U(:,i));

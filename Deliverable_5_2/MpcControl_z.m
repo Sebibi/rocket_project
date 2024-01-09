@@ -60,16 +60,13 @@ classdef MpcControl_z < MpcControlBase
             [K,Qf,~] = dlqr(mpc.A, mpc.B, Q, R);
             K = -K;
 
-
             A = mpc.A;
             B = mpc.B;
 
-        
             obj = (U(:,1)-u_ref)' * R *(U(:,1)-u_ref);
             con = (X(:,2) == A*X(:,1) + B*U(:,1) + B*d_est) + (M*U(:,1) <= m);
             for i = 2:N-1
-                con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i) +  B*d_est);
-                con = con + (M*U(:,i) <= m);
+                con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i) +  B*d_est) + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)- u_ref)'*R*(U(:,i)-u_ref);
             end 
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
@@ -126,7 +123,6 @@ classdef MpcControl_z < MpcControlBase
             M = [1;-1];
             m = [(80-Pavg_s); -(50-Pavg_s)];
 
-            % Slide chap 6 page 55
             A_new = [eye(nx) - A, -B; C , 0];
 
             % Constraints and objective 
@@ -162,13 +158,11 @@ classdef MpcControl_z < MpcControlBase
             [~, nb] = size(B); 
             [nc, ~] = size(C);
 
-            %% P6-51
-            
+            % Estimator matrices
             A_bar = [A B; zeros(1,na) eye(nb)];
             B_bar = [B; zeros(1,nb)];            
             C_bar = [C,zeros(nc,1)];
             L = -place(A_bar',C_bar',[0.5,0.6,0.7])';
-            
            
            % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

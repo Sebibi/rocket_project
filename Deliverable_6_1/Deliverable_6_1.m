@@ -7,7 +7,7 @@ clc
 Ts = 1/20;
 rocket = Rocket(Ts);
 
-H = 2; % Horizon length in seconds
+H = 3; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
 % MPC reference with default maximum roll = 15 deg
@@ -30,7 +30,8 @@ ph = rocket.plotvis(T_opt, X_opt, U_opt, ref4);
 %%
 Tf = 30;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
+
 % Visualize
-rocket.anim_rate = 1; % Increase this to make the animation faster
+rocket.anim_rate = 2; % Increase this to make the animation faster
 ph = rocket.plotvis(T, X, U, Ref);
 ph.fig.Name = 'Merged lin. MPC in nonlinear simulation'; % Set a figure title

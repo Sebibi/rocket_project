@@ -50,29 +50,27 @@ classdef NmpcControl < handle
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
-            [xs, us] = rocket.trim();
 
-            % Obtain the terminal cost
+            % Compute the terminal cost
+            [xs, us] = rocket.trim();
+ 
             sys = rocket.linearize(xs, us);
-            Q = diag([1, 1, 1, 1, 1, 100, 1, 1, 1, 100, 100, 10000]);
-            R = eye(4);
+            Q = diag([1, 1, 1, 1, 1, 1000, 1, 1, 1, 1000, 1000, 1000]);
+            R = diag([1, 1, 0.5, 1]);
             sys = c2d(sys,rocket.Ts);
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
+
+            % Define the discretized dynamics using RK4
+            F = @(x, u) RK4(x, u, rocket.Ts, rocket);
             
             % Cost
             cost = 0;
             
-            % Equality constraints (Casadi SX), each entry == 0
-            eq_constr = [ ; ];
-            
+            % Equality constraints (Casadi SX), each entry == 0            
             % Inequality constraints (Casadi SX), each entry <= 0
-            ineq_constr = [];
 
             % For box constraints on state and input, overwrite entries of
             % lbx, ubx, lbu, ubu defined above
-
-            % Define the discretized dynamics using RK4
-            F = @(x, u) RK4(x, u, rocket.Ts, rocket);
 
             % Input constraints
             lbu(1) = -deg2rad(15); ubu(1) = deg2rad(15);
@@ -83,22 +81,19 @@ classdef NmpcControl < handle
             % State constraints
             lbx(5) = -deg2rad(75); ubx(5) = deg2rad(75);
 
-            % New reference with full state
+            % Reference state
             ref_sym_all = [0; 0; 0; 0; 0; ref_sym(4); 0; 0; 0; ref_sym(1); ref_sym(2); ref_sym(3)];
             
-     
-            eq_constr =  (X_sym(:, 1) - x0_sym); 
-            for i = 1:N-1
+            eq_constr = [X_sym(:, 1) - x0_sym; X_sym(:,2) - F(X_sym(:,1), U_sym(:,1))];
+            ineq_constr = [lbu - U_sym(:,1); U_sym(:,1) - ubu];
+            cost = cost + U_sym(:, 1)' * R * U_sym(:, 1);
+            for i = 2:N-1
                 eq_constr = [eq_constr ; X_sym(:, i+1) - F(X_sym(:,i), U_sym(:,i))];
-                cost = cost + ( U_sym(:, i)' * R * U_sym(:, i)); % + X_sym(:, i)' * Q * X_sym(:,i) )
-                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all);
                 ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,i); X_sym(5,i) - ubx(5); lbu - U_sym(:,i); U_sym(:,i) - ubu];
+                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all) + U_sym(:, i)' * R * U_sym(:, i); 
             end     
             ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,N); X_sym(5,N) - ubx(5)];
-            % ref_all = zeros(12, 1);
-            % ref_all([10, 11, 12, 6]) = ref_sym;
             cost = cost + (X_sym(:, N) - ref_sym_all)'*Qf* (X_sym(:, N) - ref_sym_all); 
-
             
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE

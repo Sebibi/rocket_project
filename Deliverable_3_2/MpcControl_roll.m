@@ -66,8 +66,7 @@ classdef MpcControl_roll < MpcControlBase
             obj = (U(:,1)-u_ref)' * R * (U(:,1)-u_ref);
             con = (X(:,2) == A*X(:,1) + B*U(:,1)) + (M*U(:,1) <= m);
             for i = 2:N-1
-                con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i));
-                con = con + (M*U(:,i) <= m);
+                con = con + (X(:,i+1) == A*X(:,i) + B*U(:,i)) + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end 
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
@@ -116,7 +115,6 @@ classdef MpcControl_roll < MpcControlBase
             M = [1;-1];
             m = [20; 20];
 
-            % Slide chap 6 page 43
             A_new = [eye(nx) - A, B; C , 0];
 
             % Constraints and objective 
