@@ -5,12 +5,12 @@ clear all
 clc
 
 Ts = 1/40; % Higher sampling rate for this part!
-delay = 2;
+delay = 5;
 
 rocket = Rocket(Ts);
 H = 2; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
-nmpc_d = NmpcControl(rocket, H);
+nmpc_d = NmpcControl(rocket, H, delay);
 
 x0 = zeros(12, 1);
 ref = [0.5, 0, 1, deg2rad(65)]';
@@ -29,7 +29,7 @@ U_opt(:,end+1) = nan;
 ph = rocket.plotvis(T_opt, X_opt, U_opt, ref);
 set(ph.fig, 'Name', 'Open-Loop simulation with delay compensation');
 
-%% Simulate closed-loop system and track TVC
+%% Simulate closed-loop system 
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X, U, Ref);
 set(ph.fig, 'Name', 'Closed-Loop simulation');
