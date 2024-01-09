@@ -7,15 +7,15 @@ clc
 Ts = 1/20;
 rocket = Rocket(Ts);
 
-H = 3; % Horizon length in seconds
+H = 1.5; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
 % MPC reference with default maximum roll = 15 deg
-ref = @(t_, x_) ref_TVC(t_);
+% ref = @(t_, x_) ref_TVC(t_);
 
 % MPC reference with specified maximum roll = 50 deg
-% roll_max = deg2rad(50);
-% ref = @(t_, x_) ref_TVC(t_, roll_max);
+roll_max = deg2rad(50);
+ref = @(t_, x_) ref_TVC(t_, roll_max);
 
 %% Evaluate once and plot optimal open−loop trajectory,
 % pad last input to get consistent size with time and state

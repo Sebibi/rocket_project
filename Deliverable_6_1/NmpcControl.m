@@ -55,8 +55,9 @@ classdef NmpcControl < handle
             [xs, us] = rocket.trim();
  
             sys = rocket.linearize(xs, us);
+
             Q = diag([1, 1, 1, 1, 1, 2000, 1, 1, 1, 1000, 1000, 2000]);
-            R = diag([1, 1, 0.5, 1]);
+            R = diag([1, 1, 1, 1]);
             sys = c2d(sys,rocket.Ts);
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
 
@@ -86,11 +87,11 @@ classdef NmpcControl < handle
             
             eq_constr = [X_sym(:, 1) - x0_sym; X_sym(:,2) - F(X_sym(:,1), U_sym(:,1))];
             ineq_constr = [lbu - U_sym(:,1); U_sym(:,1) - ubu];
-            cost = cost + U_sym(:, 1)' * R * U_sym(:, 1);
+            cost = cost + (U_sym(:, 1)-us)' * R * (U_sym(:, 1)-us);
             for i = 2:N-1
                 eq_constr = [eq_constr ; X_sym(:, i+1) - F(X_sym(:,i), U_sym(:,i))];
                 ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,i); X_sym(5,i) - ubx(5); lbu - U_sym(:,i); U_sym(:,i) - ubu];
-                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all) + U_sym(:, i)' * R * U_sym(:, i); 
+                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all) + (U_sym(:, i)-us)' * R * (U_sym(:, i)-us); 
             end     
             ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,N); X_sym(5,N) - ubx(5)];
             cost = cost + (X_sym(:, N) - ref_sym_all)'*Qf* (X_sym(:, N) - ref_sym_all); 

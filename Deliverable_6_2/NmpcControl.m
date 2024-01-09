@@ -86,14 +86,15 @@ classdef NmpcControl < handle
             
             eq_constr = [X_sym(:, 1) - x0_sym; X_sym(:,2) - F(X_sym(:,1), U_sym(:,1))];
             ineq_constr = [lbu - U_sym(:,1); U_sym(:,1) - ubu];
-            cost = cost + U_sym(:, 1)' * R * U_sym(:, 1);
+            cost = cost + (U_sym(:, 1)-us)' * R * (U_sym(:, 1)-us);
             for i = 2:N-1
                 eq_constr = [eq_constr ; X_sym(:, i+1) - F(X_sym(:,i), U_sym(:,i))];
                 ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,i); X_sym(5,i) - ubx(5); lbu - U_sym(:,i); U_sym(:,i) - ubu];
-                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all) + U_sym(:, i)' * R * U_sym(:, i); 
+                cost = cost + (X_sym(:, i) - ref_sym_all)' * Q * (X_sym(:, i)-ref_sym_all) + (U_sym(:, i)-us)' * R * (U_sym(:, i)-us); 
             end     
             ineq_constr = [ineq_constr ; lbx(5) - X_sym(5,N); X_sym(5,N) - ubx(5)];
             cost = cost + (X_sym(:, N) - ref_sym_all)'*Qf* (X_sym(:, N) - ref_sym_all); 
+
             
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
