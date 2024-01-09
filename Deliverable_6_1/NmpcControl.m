@@ -61,7 +61,7 @@ classdef NmpcControl < handle
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
 
             % Define the discretized dynamics using RK4
-            F = @(x, u) RK4(x, u, rocket.Ts, rocket);
+            F = @(x, u) RK4(x, u, rocket);
             
             % Cost
             cost = 0;
@@ -156,9 +156,13 @@ classdef NmpcControl < handle
             
             % Delay compensation: Predict x0 delay timesteps later.
             % Simulate x_ for 'delay' timesteps
+            
+            % Define the discretized dynamics using RK4
+            F = @(x, u) RK4(x, u, obj.rocket);
+
             x_ = x0;
             % ...
-       
+
             x0 = x_;
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -175,7 +179,7 @@ classdef NmpcControl < handle
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Delay compensation: Save current u
             if obj.expected_delay > 0
-               % obj.mem_u = ...
+               % obj.mem_u =...
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,7 +246,7 @@ classdef NmpcControl < handle
 end
 
 
-function [x_next] = RK4(x, u,h,rocket)
+function [x_next] = RK4(x, u,rocket)
 %
 % Inputs : 
 %    X, U current state and input
@@ -257,6 +261,7 @@ function [x_next] = RK4(x, u,h,rocket)
 
 % x_next = ...
    
+    h = rocket.Ts;
     [k1, ~] = rocket.f(x, u);
     [k2, ~] = rocket.f(x + (h/2)*k1, u);
     [k3, ~] = rocket.f(x + (h/2)*k2 ,u);
