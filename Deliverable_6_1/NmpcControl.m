@@ -56,7 +56,7 @@ classdef NmpcControl < handle
  
             sys = rocket.linearize(xs, us);
 
-            Q = diag([1, 1, 1, 1, 1, 2000, 1, 1, 1, 1000, 1000, 2000]);
+            Q = diag([1000, 1000, 1000, 100, 100,15000, 1000, 1000, 1000, 10000, 10000, 15000]);
             R = diag([1, 1, 1, 1]);
             sys = c2d(sys,rocket.Ts);
             [~,Qf,~] = dlqr(sys.A, sys.B, Q, R);
@@ -159,8 +159,6 @@ classdef NmpcControl < handle
             % Simulate x_ for 'delay' timesteps
             
             % Define the discretized dynamics using RK4
-            F = @(x, u) RK4(x, u, obj.rocket);
-
             x_ = x0;
             % ...
 
@@ -250,17 +248,10 @@ end
 function [x_next] = RK4(x, u,rocket)
 %
 % Inputs : 
-%    X, U current state and input
-%    h    sample period
-%    f    continuous time dynamics f(x,u)
+%    x, u current state and input
+%    rocket    
 % Returns
-%    State h seconds in the future
-%
-
-% Runge-Kutta 4 integration
-% write your function here
-
-% x_next = ...
+%    State rocket.Ts seconds in the future
    
     h = rocket.Ts;
     [k1, ~] = rocket.f(x, u);
