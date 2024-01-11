@@ -47,9 +47,7 @@ classdef MpcControl_z < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            % Q = diag([1, 1000]);
-            Q = diag([1, 100]);
-            %Q = eye(nx) * 100;
+            Q = diag([1, 7000]);
             R = eye(nu);
 
             us = 56.666666540173570;
