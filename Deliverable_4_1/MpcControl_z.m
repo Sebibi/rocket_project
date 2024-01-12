@@ -50,10 +50,10 @@ classdef MpcControl_z < MpcControlBase
             Q = diag([1, 7000]);
             R = eye(nu);
 
-            us = 56.666666540173570;
+            Pavg_s = 56.666666540173570;
 
             M = [1;-1];
-            m = [(80-us); -(50-us)];
+            m = [(80-Pavg_s); -(50-Pavg_s)];
 
             F = [];
             f = [];
