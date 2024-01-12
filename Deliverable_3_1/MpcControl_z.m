@@ -47,14 +47,16 @@ classdef MpcControl_z < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = eye(nx);
+            Q = 15 * eye(nx);
             R = eye(nu);
 
             us = 56.666666540173570;
 
+            % constraints of the input
             M = [1;-1];
             m = [(80-us); -(50-us)];
 
+            % no states constraints
             F = [];
             f = [];
 
@@ -78,7 +80,7 @@ classdef MpcControl_z < MpcControlBase
             % PLot the terminal set
             figure;
             Xf.plot();
-            title('Terminal set of z');
+            title('Terminal invariant set of z');
 
             A = mpc.A;
             B = mpc.B;

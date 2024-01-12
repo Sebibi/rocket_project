@@ -20,7 +20,7 @@ mpc_y = MpcControl_y(sys_y, Ts, H);
 mpc_z = MpcControl_z(sys_z, Ts, H);
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 
-%% Set the state targets for the controllers 
+%% Initial state for the controllers 
 x0_x = [0; 0; 0; 0]; % System x
 x0_y = [0; 0; 0; 0]; %System y
 x0_z = [0; 0]; % System z

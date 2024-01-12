@@ -33,15 +33,17 @@ classdef MpcControl_roll < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = eye(nx);
+            Q = 40 * eye(nx);
             R = eye(nu);
 
             [K,Qf,~] = dlqr(mpc.A, mpc.B, Q, R);
             K = -K;
 
+            % constraints of the input
             M = [1;-1];
             m = [20; 20];
 
+            % no state constraints
             F = [];
             f = [];
 
@@ -62,7 +64,7 @@ classdef MpcControl_roll < MpcControlBase
             % PLot the terminal set
             figure;
             Xf.plot();
-            title('Terminal set roll');
+            title('Terminal invariant set roll');
 
             A = mpc.A;
             B = mpc.B;

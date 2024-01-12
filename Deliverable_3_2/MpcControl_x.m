@@ -33,11 +33,15 @@ classdef MpcControl_x < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = diag([100, 200, 100, 600]);
-            R = eye(nu);
+            % Q = diag([100, 200, 100, 600]);
+            Q = eye(nx);
+            R = 10 *eye(nu);
 
+            % constraints of the input 
             M = [1;-1];
             m = [deg2rad(15); deg2rad(15)];
+
+            % constraints of the states
             F = [0 1 0 0; 0 -1 0 0];
             f = [deg2rad(10); deg2rad(10)];
 

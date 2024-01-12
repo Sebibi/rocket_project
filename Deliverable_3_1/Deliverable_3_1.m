@@ -20,19 +20,19 @@ mpc_y = MpcControl_y(sys_y, Ts, H);
 mpc_z = MpcControl_z(sys_z, Ts, H);
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 
-%% Set the state targets for the controllers 
+%% Set the starting points for the controllers 
 x0_x = [0; 0; 0; 3]; % System x
 x0_y = [0; 0; 0; 3]; %System y
 x0_z = [0; 3]; % System z
 x0_roll = [0; deg2rad(30)]; % System roll
 
-%% Open loop 
+%% Open loop plots
 plot_open_loop(x0_x, mpc_x, sys_x, xs, us, rocket);
 plot_open_loop(x0_y, mpc_y, sys_y, xs, us, rocket);
 plot_open_loop(x0_z, mpc_z, sys_z, xs, us, rocket);
 plot_open_loop(x0_roll, mpc_roll, sys_roll, xs, us, rocket);
 
-%% Closed Loop
+%% Closed Loop plots
 Tf = 10;
 plot_closed_loop(Tf, x0_x, sys_x, mpc_x, xs, us, rocket)
 plot_closed_loop(Tf, x0_y, sys_y, mpc_y, xs, us, rocket)

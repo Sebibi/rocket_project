@@ -33,12 +33,14 @@ classdef MpcControl_roll < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            Q = diag([1, 1000]);
+            
+            Q = 40 * eye(nx);
             R = eye(nu);
 
             [K,Qf,~] = dlqr(mpc.A, mpc.B, Q, R);
             K = -K;
 
+            % constraints of the input
             M = [1;-1];
             m = [20; 20];
 
@@ -71,6 +73,8 @@ classdef MpcControl_roll < MpcControlBase
             end 
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             con = con + (Ff*X(:,N) <= ff);
+
+           
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

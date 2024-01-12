@@ -34,10 +34,13 @@ classdef MpcControl_x < MpcControlBase
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
             Q = eye(nx);
-            R = eye(nu);
+            R = 10 * eye(nu);
 
+            % constraints of the input 
             M = [1;-1];
             m = [deg2rad(15); deg2rad(15)];
+
+            % constraints of the states
             F = [0 1 0 0; 0 -1 0 0];
             f = [deg2rad(10); deg2rad(10)];
 
@@ -63,28 +66,28 @@ classdef MpcControl_x < MpcControlBase
 
             subplot(2,3,1);
             Xf.projection([1,2]).plot();
-            title('1:2');
+            title('w_y : beta');
 
             subplot(2,3,2);
             Xf.projection([1, 3]).plot();
-            title('1:3');
+            title('w_y : v_x');
 
             subplot(2,3,3);
             Xf.projection([1,4]).plot();
-            title('1:4');
+            title('w_y : x');
 
             subplot(2,3,4);
             Xf.projection([2,3]).plot();
-            title('2:3');
+            title('beta : v_x');
 
             subplot(2,3,5);
             Xf.projection([2,4]).plot();
-            title('2:4');
+            title('beta : x');
 
             subplot(2,3,6);
             Xf.projection([3,4]).plot();
-            title('3:4');
-            sgtitle("Terminal set of x");
+            title('v_x : x');
+            sgtitle("Terminal invariant set of x");
 
             A = mpc.A;
             B = mpc.B;
