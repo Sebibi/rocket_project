@@ -62,31 +62,39 @@ classdef MpcControl_y < MpcControlBase
             [Ff, ff] = double(Xf);
 
             % Plot the terminal invarient set
+            
             figure;
-
+            
             subplot(2,3,1);
             Xf.projection([1,2]).plot();
-            title('w_x : alpha');
-
+            xlabel('w_x [rad/s]');
+            ylabel('alpha [rad]');
+            
             subplot(2,3,2);
             Xf.projection([1, 3]).plot();
-            title('w_x : v_y');
-
+            xlabel('w_x [rad/s]');
+            ylabel('v_y [m/s]');
+            
             subplot(2,3,3);
             Xf.projection([1,4]).plot();
-            title('w_x : y');
-
+            xlabel('w_x [rad/s]');
+            ylabel('y [m]');
+            
             subplot(2,3,4);
             Xf.projection([2,3]).plot();
-            title('alpha : v_y');
-
+            xlabel('alpha [rad]');
+            ylabel('v_y [m/s]');
+            
             subplot(2,3,5);
             Xf.projection([2,4]).plot();
-            title('alpha : y');
-
+            xlabel('alpha [rad]');
+            ylabel('y [m]');
+            
             subplot(2,3,6);
             Xf.projection([3,4]).plot();
-            title('v_y : y');
+            xlabel('v_y [m/s]');
+            ylabel('y [m]');
+
             sgtitle("Terminal invariant set of y");
 
             A = mpc.A;

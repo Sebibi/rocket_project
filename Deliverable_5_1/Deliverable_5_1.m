@@ -53,6 +53,6 @@ set(ph.fig, 'Name', 'Simulation with disturbance estimation');
 
 
 %% PLot the distubance estimation
-figure
-plot(Z_hat(13,:))
-title("Disturbance Estimation")
+figure;
+plot(Z_hat(13,:));
+title("Disturbance Estimation");

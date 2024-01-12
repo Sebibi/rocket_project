@@ -34,10 +34,10 @@ plot_open_loop(x0_roll, mpc_roll, sys_roll, xs, us, rocket, deg2rad(35));
 
 %% Closed Loop
 Tf = 10;
-plot_closed_loop(Tf, x0_x, sys_x, mpc_x, xs, us, rocket, -4)
-plot_closed_loop(Tf, x0_y, sys_y, mpc_y, xs, us, rocket, -4)
-plot_closed_loop(Tf, x0_z, sys_z, mpc_z, xs, us, rocket, -4)
-plot_closed_loop(Tf, x0_roll, sys_roll, mpc_roll, xs, us, rocket, deg2rad(35))
+plot_closed_loop(Tf, x0_x, sys_x, mpc_x, xs, us, rocket, -4);
+plot_closed_loop(Tf, x0_y, sys_y, mpc_y, xs, us, rocket, -4);
+plot_closed_loop(Tf, x0_z, sys_z, mpc_z, xs, us, rocket, -4);
+plot_closed_loop(Tf, x0_roll, sys_roll, mpc_roll, xs, us, rocket, deg2rad(35));
 
 %% Function definition
 function plot_open_loop(x0, mpc, sys, xs, us, rocket, pos_ref)

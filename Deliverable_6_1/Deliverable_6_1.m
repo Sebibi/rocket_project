@@ -7,6 +7,7 @@ clc
 Ts = 1/20;
 rocket = Rocket(Ts);
 
+H = 2; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
 %% Evaluate once and plot optimal open−loop trajectory,
@@ -16,6 +17,7 @@ ref4 = [2 2 2 deg2rad(40)]';
 [u, T_opt, X_opt, U_opt] = nmpc.get_u(x0, ref4);
 U_opt(:,end+1) = nan;
 ph = rocket.plotvis(T_opt, X_opt, U_opt, ref4);
+ph.fig.Name = 'Open loop simulation of NMPC'; % Set a figure title
 
 % MPC reference with default maximum roll = 15 deg
 ref = @(t_, x_) ref_TVC(t_);
@@ -26,7 +28,7 @@ Tf = 30;
 % Visualize
 rocket.anim_rate = 2; % Increase this to make the animation faster
 ph = rocket.plotvis(T, X, U, Ref);
-ph.fig.Name = 'NMPC in nonlinear simulation roll_max=50'; % Set a figure title
+ph.fig.Name = 'NMPC in nonlinear simulation roll_max=15'; % Set a figure title
 
 
 % MPC reference with specified maximum roll = 50 deg
@@ -49,7 +51,6 @@ sys = rocket.linearize(xs, us);
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys, xs, us);
 
 % Setup linear controller
-H = 2; % Horizon length in seconds
 mpc_x = MpcControl_x(sys_x, Ts, H);
 mpc_y = MpcControl_y(sys_y, Ts, H);
 mpc_z = MpcControl_z(sys_z, Ts, H);

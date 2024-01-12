@@ -1,6 +1,7 @@
 addpath(fullfile('..', 'src'));
 
 close all
+clear all
 clc
 
 Ts = 1/40; % Higher sampling rate for this part!

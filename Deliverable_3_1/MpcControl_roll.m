@@ -64,6 +64,8 @@ classdef MpcControl_roll < MpcControlBase
             % PLot the terminal set
             figure;
             Xf.plot();
+            xlabel('w_z [rad/s]');
+            ylabel('gamma [rad]');
             title('Terminal invariant set roll');
 
             A = mpc.A;

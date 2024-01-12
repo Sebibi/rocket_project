@@ -80,6 +80,8 @@ classdef MpcControl_z < MpcControlBase
             % PLot the terminal set
             figure;
             Xf.plot();
+            xlabel('v_z [m/s]');
+            ylabel('z [m]');
             title('Terminal invariant set of z');
 
             A = mpc.A;
